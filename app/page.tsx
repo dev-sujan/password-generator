@@ -1,50 +1,52 @@
 "use client";
 import { generatePassword } from "@/libs/passwordGenerator";
 import { reducer } from "@/reducers/reducer";
-import { useEffect, useRef, useReducer, useCallback } from "react";
+import { useEffect, useRef, useReducer } from "react";
+
+const initialState = {
+  length: 8,
+  numbersAllowed: true,
+  charactersAllowed: true,
+  password: "",
+};
+
+function generateNewPassword(
+  length: number,
+  numbersAllowed: boolean,
+  charactersAllowed: boolean,
+  dispatch: {
+    (value: any): void;
+    (arg0: { type: string; payload: string }): void;
+  }
+) {
+  const pass = generatePassword(length, numbersAllowed, charactersAllowed);
+  dispatch({ type: "SET_PASSWORD", payload: pass });
+}
 
 export default function Home() {
-  const initialState = {
-    length: 8,
-    numbersAllowed: true,
-    charactersAllowed: true,
-    password: "",
-  };
-
   const [state, dispatch] = useReducer(reducer, initialState);
   const { length, numbersAllowed, charactersAllowed, password } = state;
 
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const copyBtnRef = useRef<HTMLButtonElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleChange = () => {};
-
-  useEffect(() => {
-    const generateNewPassword = () => {
-      const pass = generatePassword(length, numbersAllowed, charactersAllowed);
-      dispatch({ type: "SET_PASSWORD", payload: pass });
-    };
-
-    generateNewPassword();
-  }, [length, numbersAllowed, charactersAllowed]);
+  const passwordRef = useRef(null);
+  const copyBtnRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   const copyPasswordToClipboard = () => {
-    passwordRef.current?.select();
+    (passwordRef.current as HTMLInputElement | null)?.select();
     window.navigator.clipboard.writeText(password);
-    copyBtnRef.current!.innerText = "Copied";
+    (copyBtnRef.current as HTMLButtonElement | null)!.innerText = "Copied";
 
     if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
+      clearTimeout(timeoutRef.current as NodeJS.Timeout);
+      setTimeout(() => {
+        (copyBtnRef.current as HTMLButtonElement | null)!.innerText = "Copy";
+      }, 1000);
     }
-
-    timeoutRef.current = setTimeout(() => {
-      copyBtnRef.current!.innerText = "Copy";
-    }, 1000);
   };
 
-  // check re-rendering
-  console.log("rendering ...");
+  useEffect(() => {
+    generateNewPassword(length, numbersAllowed, charactersAllowed, dispatch);
+  }, [length, numbersAllowed, charactersAllowed, dispatch]);
 
   return (
     <div className="w-full py-4 max-w-md mx-auto rounded-lg px-4 my-8 text-orange-600 bg-gray-700 ">
@@ -63,7 +65,7 @@ export default function Home() {
           type="text"
           name="password"
           id="password"
-          value={password}
+          defaultValue={password}
           placeholder="password"
           readOnly
           className="outline-none w-full py-1 px-3"
