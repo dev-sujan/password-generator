@@ -81,7 +81,7 @@ export default function Home() {
           Copy
         </button>
       </div>
-      <div className="flex gap-x-3 text-sm">
+      <div className="flex gap-x-2 text-sm">
         <div className="flex items-center gap-x-1">
           <small className="text-white">6</small>
           <input
