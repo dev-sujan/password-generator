@@ -81,17 +81,19 @@ export default function Home() {
       </div>
       <div className="flex gap-x-3 text-sm">
         <div className="flex items-center gap-x-1">
+          <small className="text-white">6</small>
           <input
             type="range"
             min={6}
-            max={50}
+            max={60}
             value={length}
             className="cursor-pointer"
             onChange={(e) =>
               dispatch({ type: "SET_LENGTH", payload: +e.target.value })
             }
           />
-          <label>Length: {length}</label>
+          <small className="text-white">60</small>
+          <label className="w-20">Length: {length}</label>
         </div>
         <div className="flex items-center gap-x-1">
           <input
